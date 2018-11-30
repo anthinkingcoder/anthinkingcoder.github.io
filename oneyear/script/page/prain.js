@@ -24,7 +24,7 @@ function Prain(options) {
     this.options = $.extend(true, {}, {
         sources: [],
         colors: [],
-        duration: '4s',
+        duration: '3s',
         baseTimeout: 500,
         lefts: []
     }, options);
@@ -43,7 +43,7 @@ Prain.prototype.sendRainItemView = function (postionIndex) {
         left: lefts[postionIndex],
         width: '1.5rem',
         height: '2rem',
-        background: 'url(' + '../img/ys/' + this.options.sources[this.sourceIndex++] + ')' + ' no-repeat center',
+        background: 'url(' + 'img/ys/' + this.options.sources[this.sourceIndex++] + ')' + ' no-repeat center',
         backgroundSize: 'cover',
         borderRadius: '6px',
         transition: 'all ' + this.options.duration + ' ease-in',
@@ -211,3 +211,10 @@ function secondSurprise() {
     }, 10000);
 }
 
+//预加载
+$(function () {
+  sources.forEach(function (t) {
+      var img = document.createElement('img')
+      img.src = 'img/ys/' + t
+  })
+})

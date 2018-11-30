@@ -4,76 +4,106 @@
  */
 
 function Loading(content) {
-    content = content ? content : '';
-    this.$el = $(createLoadingView());
+  content = content ? content : '';
+  this.$el = $(createLoadingView());
 
-    function createLoadingView() {
-        if (content) {
-            return '<div class="ia-loading-box" style="display:none;"><div class="ia-loading-wrapper"><div class="ia-loading ia-loading-large"></div><div class="ia-loading-content">' + content + '</div></div></div>';
-        } else {
-            return '<div class="ia-loading-box" style="display:none;"><div class="ia-loading-wrapper"><div class="ia-loading ia-loading-large"></div></div></div>';
-        }
+  function createLoadingView() {
+    if (content) {
+      return '<div class="ia-loading-box" style="display:none;"><div class="ia-loading-wrapper"><div class="ia-loading ia-loading-large"></div><div class="ia-loading-content">' + content + '</div></div></div>';
+    } else {
+      return '<div class="ia-loading-box" style="display:none;"><div class="ia-loading-wrapper"><div class="ia-loading ia-loading-large"></div></div></div>';
     }
+  }
 }
 
 Loading.prototype.show = function () {
-    var self = this;
-    $('body').append(this.$el, {});
-    setTimeout(function () {
-        self.$el.fadeIn(500);
-    })
+  var self = this;
+  $('body').append(this.$el, {});
+  setTimeout(function () {
+    self.$el.fadeIn(500);
+  })
 };
 
 
 Loading.prototype.hide = function () {
-    var self = this;
-    this.$el.fadeOut(500);
-    setTimeout(function () {
-        self.$el.remove();
-    }, 500);
+  var self = this;
+  this.$el.fadeOut(500);
+  setTimeout(function () {
+    self.$el.remove();
+  }, 500);
 };
 
 
 (function () {
-    $('#musicAudio').on('ended', function () {
-       $(this).attr('src','http://fs.open.kugou.com/2e9145b6d30d22cefefc186548c4c68f/5a828051/G002/M08/02/13/ooYBAFT-JiqABNIaAEBvMGDr7qI119.mp3');
-       playMusic();
-    });
-    //播放音乐
-    $('#musicPlayBtn').on('click', function () {
-        playMusic();
-    });
+  $('#musicAudio').on('ended', function () {
+    playMusic();
+  });
+  //播放音乐
+  $('#musicPlayBtn').on('click', function () {
+    playMusic();
+  });
 
-    $('html').one('touchstart', function () {
-        playMusic();
-    });
+
+
 })();
 
-
-
 var pause = false;
-
+var once = 0
 function playMusic() {
-    var $audio = $('#musicAudio');
-    if (!pause) {
-        $('#musicPlayBtn').addClass('playing');
-        pause = true;
-        $audio[0].play();
-    } else {
+  var $audio = $('#musicAudio');
+  if (!pause) {
+    $('#musicPlayBtn').addClass('playing');
+    pause = true;
+    try {
+      $audio[0].play().catch(function (error) {
+        $('#musicPlayBtn').removeClass('playing');
         pause = false;
         $audio[0].pause();
-        $('#musicPlayBtn').removeClass('playing');
+        console.log(error)
+      });
+    } catch (error) {
     }
+  } else {
+    pause = false;
+    $audio[0].pause();
+    $('#musicPlayBtn').removeClass('playing');
+  }
 
 
 }
 
 
-//禁止ios端滑动
-$(document).ready(function () {
-    function stopScrolling(touchEvent) {
-        touchEvent.preventDefault();
-    }
+(function () {
+  var laoding = new Loading('精彩马上开始');
+  $('#go').on('click', function () {
+    laoding.show();
+    var yzn = new YZN('#wrapper', {
+      onplay: function (step, beforeStep) {
+        if (beforeStep) {
+          var $beforeStepFrame1 = $(beforeStep).find('.step-frame1').first();
+          var $beforeStepFrame2 = $(beforeStep).find('.step-frame2').first();
+          $beforeStepFrame1.removeClass('step-frame1-active');
+          $beforeStepFrame2.removeClass('step-frame2-active');
+        }
+        var $stepFrame1 = $(step).find('.step-frame1').first();
+        $stepFrame1.addClass('step-frame1-active');
+        //播放第二帧
+        var $stepFrame2 = $(step).find('.step-frame2').first();
+        $stepFrame1.on('transitionend', function (e) {
+          $stepFrame2.addClass('step-frame2-active');
+        });
+      },
+      onload: function () {
+        laoding.hide();
+        $('#playbg').hide()
+        setTimeout(function () {
+          playMusic()
+        }, 2000)
+        $('#wrapper').show();
+      }
+    });
+  })
 
-    document.addEventListener('touchmove', stopScrolling, false);
-});
+})();
+
+

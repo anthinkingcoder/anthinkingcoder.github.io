@@ -194,28 +194,4 @@ YZN.prototype.hide = function ($el) {
 };
 
 
-(function () {
-    var laoding = new Loading('精彩马上开始');
-    laoding.show();
-    var yzn = new YZN('#wrapper', {
-        onplay: function (step, beforeStep) {
-            if (beforeStep) {
-                var $beforeStepFrame1 = $(beforeStep).find('.step-frame1').first();
-                var $beforeStepFrame2 = $(beforeStep).find('.step-frame2').first();
-                $beforeStepFrame1.removeClass('step-frame1-active');
-                $beforeStepFrame2.removeClass('step-frame2-active');
-            }
-            var $stepFrame1 = $(step).find('.step-frame1').first();
-            $stepFrame1.addClass('step-frame1-active');
-            //播放第二帧
-            var $stepFrame2 = $(step).find('.step-frame2').first();
-            $stepFrame1.on('transitionend', function (e) {
-                $stepFrame2.addClass('step-frame2-active');
-            });
-        },
-        onload: function () {
-            laoding.hide();
-            $('#wrapper').show();
-        }
-    });
-})();
+
